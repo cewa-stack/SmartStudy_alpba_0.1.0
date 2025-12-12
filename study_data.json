@@ -1,0 +1,42 @@
+{
+    "subjects": {
+        "Matematyka": {
+            "Matma Elementy algebry liniowej macierze i ich zastosowania": {
+                "path": "notes_library\\Matematyka_Matma_Elementy algebry liniowej macierze i ich zastosowania.html",
+                "tags": [],
+                "last_opened": "2025-12-10 16:28:53.832803",
+                "created": "2025-12-10 00:22:41.396184"
+            },
+            "ca\u0142ki i r\u00f3\u017cniczkowanie.html": {
+                "path": "notes_library\\Matematyka_ca\u0142ki i r\u00f3\u017cniczkowanie.html"
+            },
+            "funkcje i ci\u0105gi.html": {
+                "path": "notes_library\\Matematyka_funkcje i ci\u0105gi.html"
+            },
+            "prawdopodobie\u0144stwo.html": {
+                "path": "notes_library\\Matematyka_prawdopodobie\u0144stwo.html"
+            },
+            "prawdopodobie\u0144stwo v2.html": {
+                "path": "notes_library\\Matematyka_prawdopodobie\u0144stwo v2.html"
+            }
+        },
+        "Programowanie": {
+            "Podstawy programowania.html": {
+                "path": "notes_library\\Programowanie_Podstawy programowania.html",
+                "tags": [],
+                "created": "2025-12-10 16:26:30.682926",
+                "last_opened": "2025-12-10 17:20:16.042347"
+            },
+            "Podstawy_WebDev.html": {
+                "path": "notes_library\\Programowanie_Podstawy_WebDev.html"
+            }
+        },
+        "Inne": {
+            "CWICZENIA_Podstawy_programowania.html": {
+                "path": "notes_library\\CWICZENIA_Podstawy_programowania.html"
+            }
+        }
+    },
+    "api_key": "AIzaSyDK3FzCwlKLRdyS6CnSyz4str-pa4JQ0HU",
+    "calendar_notes": {}
+}

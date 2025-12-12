@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analiza Matematyczna dla AI/ML</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #1f2937;
+            --heading-font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            
+            /* AI/ML Theme Colors (More Tech-focused) */
+            --purple-light: #f3e8ff; --purple-dark: #6b21a8; --purple-border: #a855f7;
+            --blue-light: #eff6ff;   --blue-dark: #1e3a8a;   --blue-border: #3b82f6;
+            --green-light: #f0fdf4;  --green-dark: #14532d;  --green-border: #22c55e;
+            --yellow-light: #fefce8; --yellow-dark: #713f12; --yellow-border: #eab308;
+            --indigo-light: #eef2ff; --indigo-dark: #312e81; --indigo-border: #6366f1;
+            
+            --code-bg: #111827;
+            --code-text: #10b981;
+        }
+
+        body {
+            font-family: var(--heading-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(120deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+            padding: 50px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 10%);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            transform: rotate(30deg);
+        }
+
+        header h1 { margin: 10px 0; font-size: 2.8rem; letter-spacing: -1px; }
+        header .subtitle { font-size: 1.2rem; opacity: 0.9; font-weight: 300; }
+        header .badge {
+            background: rgba(255,255,255,0.25);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* SECTIONS */
+        details.section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-left: 6px solid #ccc;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        details.section:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        summary {
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            list-style: none;
+            outline: none;
+            user-select: none;
+        }
+        summary::-webkit-details-marker { display: none; }
+
+        .section-content { padding: 0 30px 30px 30px; border-top: 1px solid #f3f4f6; }
+        
+        details[open] .section-content { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .toggle-icon { transition: transform 0.3s; font-size: 0.8em; opacity: 0.6; }
+        details[open] summary .toggle-icon { transform: rotate(180deg); }
+
+        /* THEMES */
+        details.purple { border-left-color: var(--purple-dark); }
+        details.purple summary { background-color: var(--purple-light); color: var(--purple-dark); }
+        
+        details.blue { border-left-color: var(--blue-dark); }
+        details.blue summary { background-color: var(--blue-light); color: var(--blue-dark); }
+        
+        details.green { border-left-color: var(--green-dark); }
+        details.green summary { background-color: var(--green-light); color: var(--green-dark); }
+        
+        details.yellow { border-left-color: var(--yellow-dark); }
+        details.yellow summary { background-color: var(--yellow-light); color: var(--yellow-dark); }
+        
+        details.indigo { border-left-color: var(--indigo-dark); }
+        details.indigo summary { background-color: var(--indigo-light); color: var(--indigo-dark); }
+
+        /* COMPONENTS */
+        .ai-context {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #3b82f6;
+            font-size: 0.95rem;
+        }
+        .ai-context strong { color: #60a5fa; }
+
+        .formula-box {
+            background: var(--code-bg);
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.15rem;
+            margin: 20px 0;
+            border: 1px solid #374151;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .formula-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #2563eb;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: sans-serif;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        .card:hover { border-color: #cbd5e1; transform: translateY(-2px); }
+        .card h4 { margin-top: 0; color: #4b5563; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; }
+
+        .definition {
+            background: #fff;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            background: #fffbeb;
+        }
+
+        /* SVG & DIAGRAMS */
+        .svg-container {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            margin: 20px 0;
+        }
+
+        /* ANSWERS */
+        .answer-block {
+            background: white;
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid #166534;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+        .answer-head { font-weight: bold; color: #166534; margin-bottom: 8px; display: block; }
+        .answer-step { font-size: 0.9rem; color: #555; margin-left: 10px; border-left: 2px solid #ddd; padding-left: 10px; }
+
+        code { font-family: 'Fira Code', monospace; color: #d946ef; background: rgba(0,0,0,0.05); padding: 2px 5px; border-radius: 4px; }
+        .math { font-style: italic; font-family: 'Times New Roman', serif; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <span class="badge">Inżynieria AI & ML</span>
+        <span class="emoji-large" style="font-size: 3rem; display:block; margin-bottom:10px;">🧠 + 📐</span>
+        <h1>Matematyka dla AI</h1>
+        <div class="subtitle">Rachunek Różniczkowy, Gradienty i Optymalizacja</div>
+    </header>
+
+    <!-- SEKCYJA 1: WPROWADZENIE -->
+    <details class="section purple">
+        <summary>
+            <span>🍇 1. Granice i Ciągłość (Fundamenty Sieci)</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            <div class="ai-context">
+                <strong>💡 Kontekst AI:</strong> Dlaczego to ważne?
+                <br>Większość algorytmów uczenia maszynowego (np. Gradient Descent) wymaga, aby funkcja kosztu była <strong>ciągła</strong> i <strong>różniczkowalna</strong>. Jeśli funkcja ma "dziury" lub "skoki", nie możemy obliczyć gradientu, a sieć nie może się uczyć.
+            </div>
+
+            <div class="definition">
+                <strong>Definicja Heinego:</strong> Funkcja jest ciągła w punkcie, jeśli granica lewostronna równa się prawostronnej i równa się wartości funkcji w tym punkcie.
+            </div>
+
+            <h3>Kluczowe granice w ML:</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Liczba Eulera (e)</h4>
+                    <p>Podstawa funkcji wykładniczej używanej w rozkładach prawdopodobieństwa (Softmax, Gaussian).</p>
+                    <div class="formula-box" style="padding: 10px; font-size: 1rem;">lim<sub>n→∞</sub> (1 + 1/n)<sup>n</sup> = e ≈ 2.718</div>
+                </div>
+                <div class="card">
+                    <h4>Zanikający gradient (lim → 0)</h4>
+                    <p>Jeśli pochodna funkcji aktywacji dąży do 0 dla dużych x (np. Sigmoid), sieć przestaje się uczyć.</p>
+                    <div class="formula-box" style="padding: 10px; font-size: 1rem;">lim<sub>x→∞</sub> Sigmoid'(x) = 0</div>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- SEKCYJA 2: POCHODNE -->
+    <details class="section blue">
+        <summary>
+            <span>💧 2. Rachunek Różniczkowy i Gradienty</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            
+            <div class="ai-context">
+                <strong>💡 Kontekst AI - Gradient:</strong> 
+                Pochodna mówi nam: <em>"Jeśli zwiększę x o troszeczkę, to jak zmieni się y?"</em>.<br>
+                W sieciach neuronowych chcemy wiedzieć: <em>"Jeśli zmienię wagę <b>w</b> o troszeczkę, jak zmieni się <b>błąd</b> sieci?"</em>. To właśnie jest pochodna funkcji kosztu względem wagi.
+            </div>
+
+            <h3>Interpretacja Geometryczna</h3>
+            <div class="svg-container">
+                <svg width="400" height="200" viewBox="0 0 400 200">
+                    <!-- Axis -->
+                    <line x1="20" y1="180" x2="380" y2="180" stroke="#333" stroke-width="2" />
+                    <line x1="40" y1="180" x2="40" y2="20" stroke="#333" stroke-width="2" />
+                    <!-- Curve -->
+                    <path d="M 50 150 Q 150 250 350 50" stroke="#2563eb" stroke-width="3" fill="none" />
+                    <!-- Tangent -->
+                    <line x1="200" y1="170" x2="300" y2="50" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5" />
+                    <!-- Points -->
+                    <circle cx="250" cy="110" r="5" fill="#ef4444" />
+                    <text x="260" y="110" font-family="sans-serif" font-size="12">P(x, f(x))</text>
+                    <text x="300" y="40" fill="#ef4444" font-weight="bold">Styczna = Gradient</text>
+                    <text x="320" y="140" fill="#2563eb" font-weight="bold">Funkcja Kosztu J(w)</text>
+                </svg>
+            </div>
+
+            <h3>Pochodne Cząstkowe (Partial Derivatives)</h3>
+            <p>W ML funkcje zależą od wielu zmiennych (tysiące wag). Liczymy pochodną po jednej zmiennej, traktując inne jako stałe.</p>
+            
+            <div class="formula-box">
+                <span class="formula-label">Symbol Jacobiego</span>
+                ∂f / ∂x
+            </div>
+            
+            <div class="definition">
+                <strong>Gradient (∇f):</strong> Wektor wszystkich pochodnych cząstkowych. Wskazuje kierunek najszybszego wzrostu funkcji. W ML poruszamy się w <strong>przeciwną</strong> stronę gradientu, aby zminimalizować błąd.
+                <br><br>
+                <code>∇J(w) = [ ∂J/∂w₁, ∂J/∂w₂, ..., ∂J/∂wₙ ]</code>
+            </div>
+        </div>
+    </details>
+
+    <!-- SEKCYJA 3: REGUŁY I BACKPROPAGATION -->
+    <details class="section green">
+        <summary>
+            <span>🧪 3. Reguła Łańcuchowa i Funkcje Aktywacji</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            <div class="ai-context">
+                <strong>💡 Kontekst AI - Backpropagation:</strong> 
+                Algorytm wstecznej propagacji błędu to nic innego jak wielokrotne zastosowanie <strong>Reguły Łańcuchowej (Chain Rule)</strong>. Sieć neuronowa to funkcja złożona: <code>f(g(h(x)))</code>.
+            </div>
+
+            <h3>Reguła Łańcuchowa (Chain Rule)</h3>
+            <div class="formula-box">
+                <span class="formula-label">Fundamentalny wzór ML</span>
+                dy/dx = (dy/du) · (du/dx)
+            </div>
+            <p>Jeśli y zależy od u, a u zależy od x, to zmiana x wpływa na y pośrednio przez u.</p>
+
+            <h3>Pochodne Funkcji Aktywacji (Musisz znać!)</h3>
+            <div class="grid-3">
+                <div class="card" style="border-top: 3px solid #f59e0b;">
+                    <h4>Sigmoid σ(x)</h4>
+                    <p style="font-size:0.85rem">Używana w klasyfikacji binarnej.</p>
+                    <div style="background:#eee; padding:5px; border-radius:4px;">σ'(x) = σ(x)(1 - σ(x))</div>
+                </div>
+                <div class="card" style="border-top: 3px solid #3b82f6;">
+                    <h4>Tanh(x)</h4>
+                    <p style="font-size:0.85rem">Centrowana w zerze.</p>
+                    <div style="background:#eee; padding:5px; border-radius:4px;">tanh'(x) = 1 - tanh²(x)</div>
+                </div>
+                <div class="card" style="border-top: 3px solid #10b981;">
+                    <h4>ReLU(x)</h4>
+                    <p style="font-size:0.85rem">Najpopularniejsza w Deep Learning.</p>
+                    <div style="background:#eee; padding:5px; border-radius:4px;">
+                        1 dla x > 0<br>
+                        0 dla x < 0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- SEKCYJA 4: OPTYMALIZACJA -->
+    <details class="section yellow">
+        <summary>
+            <span>🍋 4. Optymalizacja i Szeregi Taylora</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            <div class="ai-context">
+                <strong>💡 Kontekst AI:</strong> Uczenie modelu to proces optymalizacji – szukanie minimum globalnego funkcji kosztu.
+            </div>
+
+            <h3>Ekstrema funkcji wielu zmiennych</h3>
+            <p>Aby znaleźć minimum (lub maksimum), rozwiązujemy układ równań, gdzie gradient jest wektorem zerowym:</p>
+            <div class="formula-box">∇f(x, y, ...) = 0</div>
+            
+            <p>Uwaga na <strong>Punkty Siodłowe</strong> (Saddle Points) - miejsca, gdzie pochodna jest zerem, ale nie jest to ani minimum, ani maksimum. To duży problem w sieciach wielowymiarowych.</p>
+
+            <h3>Szereg Taylora</h3>
+            <p>Pozwala przybliżyć skomplikowaną funkcję nieliniową za pomocą wielomianu. Używane w metodach optymalizacji drugiego rzędu (np. Metoda Newtona).</p>
+            <div class="formula-box" style="font-size: 1rem;">
+                f(x) ≈ f(a) + f'(a)(x-a) + f''(a)(x-a)²/2!
+            </div>
+            <ul>
+                <li><strong>f(a)</strong> - obecna pozycja</li>
+                <li><strong>f'(a)</strong> - nachylenie (gradient)</li>
+                <li><strong>f''(a)</strong> - krzywizna (Hessian)</li>
+            </ul>
+        </div>
+    </details>
+
+    <!-- SEKCYJA 5: CAŁKI -->
+    <details class="section indigo">
+        <summary>
+            <span>🔮 5. Rachunek Całkowy w Statystyce</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            <div class="ai-context">
+                <strong>💡 Kontekst AI:</strong> Całki są kluczowe w modelach probabilistycznych (np. Bayesian Networks, VAE).
+            </div>
+
+            <h3>Pole pod krzywą = Prawdopodobieństwo</h3>
+            <p>Jeśli f(x) to funkcja gęstości prawdopodobieństwa (PDF), to całka oznaczona daje nam prawdopodobieństwo zdarzenia w przedziale.</p>
+            
+            <div class="formula-box">
+                P(a ≤ X ≤ b) = ∫<sub>a</sub><sup>b</sup> f(x) dx
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Wartość Oczekiwana E[X]</h4>
+                    <p>Średnia ważona wszystkich możliwych wyników.</p>
+                    <code>E[X] = ∫ x · f(x) dx</code>
+                </div>
+                <div class="card">
+                    <h4>Entropia (Teoria Informacji)</h4>
+                    <p>Miara niepewności w danych.</p>
+                    <code>H(X) = -∫ f(x) · ln(f(x)) dx</code>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- SEKCYJA 6: PRAKTYKA -->
+    <details class="section green">
+        <summary>
+            <span>🧠 Zadania Inżynierskie (Practice)</span>
+            <span class="toggle-icon">▼</span>
+        </summary>
+        <div class="section-content">
+            <p>Sprawdź, czy rozumiesz mechanizmy stojące za sieciami neuronowymi.</p>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <strong>1. Gradient Funkcji Błędu (MSE)</strong><br>
+                    Mamy funkcję błędu dla jednej próbki: <br>
+                    <code>J(w) = (wx - y)²</code><br>
+                    Oblicz pochodną po wadze <code>w</code> (dla Gradient Descent).
+                </div>
+                <div class="card">
+                    <strong>2. Pochodna Cząstkowa</strong><br>
+                    Funkcja: <code>f(x, y) = x²y + sin(y)</code><br>
+                    Oblicz <code>∂f/∂y</code> (traktując x jako stałą).
+                </div>
+                <div class="card">
+                    <strong>3. Backpropagation (Chain Rule)</strong><br>
+                    Mamy funkcję złożoną: <code>L = (sin(w))²</code><br>
+                    Oblicz <code>dL/dw</code>.
+                </div>
+                <div class="card">
+                    <strong>4. Prawdopodobieństwo</strong><br>
+                    Funkcja gęstości <code>f(x) = 2x</code> na przedziale [0,1].<br>
+                    Oblicz całkę ∫ od 0 do 1. Czy to poprawna funkcja gęstości?
+                </div>
+            </div>
+
+            <details style="margin-top: 30px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px;">
+                <summary style="font-size: 1rem; color: #166534; padding: 15px;">
+                    ✅ Kliknij, aby sprawdzić rozwiązania
+                </summary>
+                <div style="padding: 20px;">
+                    
+                    <div class="answer-block">
+                        <span class="answer-head">Zadanie 1: Gradient MSE</span>
+                        <div class="answer-step">Wzór: J(w) = (wx - y)²</div>
+                        <div class="answer-step">Reguła łańcuchowa: func. zewn. to (...)², wewn. to (wx - y)</div>
+                        <div class="answer-step">Pochodna zewn: 2(wx - y)</div>
+                        <div class="answer-step">Pochodna wewn (po w): x</div>
+                        <div class="answer-step"><strong>Wynik: 2x(wx - y)</strong> <br> (To jest właśnie gradient, o który aktualizujemy wagi!)</div>
+                    </div>
+
+                    <div class="answer-block">
+                        <span class="answer-head">Zadanie 2: Pochodna Cząstkowa</span>
+                        <div class="answer-step">f(x, y) = x²y + sin(y)</div>
+                        <div class="answer-step">Liczymy po y, więc x² jest jak liczba (np. 5).</div>
+                        <div class="answer-step">(x²y)' po y = x² * 1 = x²</div>
+                        <div class="answer-step">(sin y)' po y = cos y</div>
+                        <div class="answer-step"><strong>Wynik: x² + cos(y)</strong></div>
+                    </div>
+
+                    <div class="answer-block">
+                        <span class="answer-head">Zadanie 3: Backpropagation</span>
+                        <div class="answer-step">L = u², gdzie u = sin(w)</div>
+                        <div class="answer-step">dL/du = 2u = 2sin(w)</div>
+                        <div class="answer-step">du/dw = cos(w)</div>
+                        <div class="answer-step"><strong>Wynik: 2sin(w)cos(w)</strong> (czyli sin(2w))</div>
+                    </div>
+
+                    <div class="answer-block">
+                        <span class="answer-head">Zadanie 4: Całka (Prawdopodobieństwo)</span>
+                        <div class="answer-step">∫ 2x dx = x²</div>
+                        <div class="answer-step">Granice [0, 1]: 1² - 0² = 1</div>
+                        <div class="answer-step"><strong>Wynik: 1</strong>. Tak, to poprawna funkcja gęstości, bo pole wynosi 1 (100% prawdopodobieństwa).</div>
+                    </div>
+
+                </div>
+            </details>
+        </div>
+    </details>
+
+    <footer style="text-align: center; margin-top: 50px; color: #6b7280; font-size: 0.9rem;">
+        Notatka wygenerowana dla studenta Inżynierii AI/ML
+    </footer>
+
+</div>
+
+</body>
+</html>

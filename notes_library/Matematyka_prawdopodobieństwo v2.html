@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prawdopodobieństwo II - Teoria i Warunki</title>
+    <style>
+        /* --- CORE STYLES (Cyberpunk Math Theme) --- */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+            --accent-pink: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --math-font: 'Cambria Math', 'Times New Roman', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            padding-bottom: 100px;
+        }
+
+        /* --- SCROLLBAR & PROGRESS --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-card); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
+
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+            width: 0%; z-index: 1000;
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        /* --- TYPOGRAPHY --- */
+        header { text-align: center; padding: 60px 20px; }
+        
+        h1 {
+            font-size: 3.5em;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            border-left: 5px solid var(--accent-purple);
+            padding-left: 20px;
+            margin-top: 60px;
+            background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), transparent);
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        h3 { font-size: 1.4em; color: var(--accent-cyan); margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; }
+        p { margin-bottom: 15px; color: var(--text-muted); font-size: 1.1em; }
+        strong { color: var(--text-main); font-weight: 700; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 0.95em;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn:hover { 
+            background: rgba(255,255,255,0.05); 
+            color: var(--accent-cyan); 
+            border-color: rgba(34, 211, 238, 0.3);
+        }
+
+        /* --- CARDS & MATH --- */
+        section {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 30px;
+            border-radius: 20px;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-purple);
+            box-shadow: 0 10px 30px rgba(192, 132, 252, 0.1);
+        }
+
+        .math-block {
+            font-family: var(--math-font);
+            background: #0b1120;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-pink);
+            font-size: 1.3em;
+            text-align: center;
+            margin: 20px 0;
+            color: #e2e8f0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            line-height: 1.8;
+        }
+
+        .math-inline {
+            font-family: var(--math-font);
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        .fraction > span { display: block; padding: 2px 5px; }
+        .fraction span.top { border-bottom: 1px solid #e2e8f0; }
+        .fraction span.bottom { padding-top: 2px; }
+
+        /* --- VENN DIAGRAM INTERACTIVE --- */
+        .venn-container {
+            display: flex; justify-content: center; align-items: center;
+            height: 300px; position: relative; margin: 20px 0;
+        }
+        .venn-circle {
+            width: 200px; height: 200px; border-radius: 50%;
+            position: absolute; mix-blend-mode: screen;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2em; font-weight: bold; transition: 0.4s;
+            cursor: pointer; opacity: 0.6;
+        }
+        .circle-a { background: var(--accent-cyan); left: 30%; border: 2px solid #fff; }
+        .circle-b { background: var(--accent-pink); right: 30%; border: 2px solid #fff; }
+        
+        .venn-circle:hover { opacity: 0.9; transform: scale(1.05); z-index: 10; }
+        .venn-label { position: absolute; bottom: 10px; color: #fff; font-size: 0.9em; }
+
+        /* --- STUDENT VISUALIZATION --- */
+        .pop-grid {
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin: 20px 0;
+        }
+        .pop-item {
+            height: 30px; border-radius: 4px; background: #334155; transition: 0.3s;
+        }
+        .pop-item.math { background: var(--accent-cyan); }
+        .pop-item.both { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); }
+        .pop-item.physics { background: var(--accent-pink); }
+
+        /* --- STEP LIST --- */
+        .step-list { counter-reset: step; list-style: none; }
+        .step-item { position: relative; padding-left: 50px; margin-bottom: 20px; }
+        .step-item::before {
+            counter-increment: step; content: counter(step);
+            position: absolute; left: 0; top: 0; width: 35px; height: 35px;
+            background: var(--bg-card); border: 2px solid var(--accent-purple);
+            border-radius: 50%; text-align: center; line-height: 32px;
+            font-weight: bold; color: var(--accent-purple);
+        }
+
+        .summary-table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+        }
+        .summary-table th, .summary-table td {
+            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;
+        }
+        .summary-table th { color: var(--accent-cyan); }
+        .summary-table td { font-family: var(--math-font); font-size: 1.1em; }
+
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="container">
+    <header>
+        <h1>🎲 Prawdopodobieństwo II</h1>
+        <p>Teoria Zbiorów • Aksjomaty • Warunkowość</p>
+    </header>
+
+    <nav>
+        <a href="#venn" class="nav-btn">🔵 Zbiory</a>
+        <a href="#axioms" class="nav-btn">📜 Aksjomaty</a>
+        <a href="#independence" class="nav-btn">🔗 Niezależność</a>
+        <a href="#conditional" class="nav-btn">❓ Warunkowe</a>
+        <a href="#summary" class="nav-btn">📝 Podsumowanie</a>
+    </nav>
+
+    <!-- 1. TEORIA ZBIORÓW -->
+    <section id="venn">
+        <h2>1. Operacje na Zbiorach</h2>
+        <p>Matematyka wymaga precyzji. Intuicyjne "worki z elementami" zastępujemy formalną teorią zbiorów. W rachunku prawdopodobieństwa <strong>zdarzenia to podzbiory</strong> przestrzeni <span class="math-inline">Ω</span>.</p>
+
+        <div class="venn-container">
+            <div class="venn-circle circle-a" title="Zbiór A">A</div>
+            <div class="venn-circle circle-b" title="Zbiór B">B</div>
+            <div style="position: absolute; color: white; font-weight: bold; font-family: var(--math-font);">A ∩ B</div>
+        </div>
+        <p style="text-align: center; font-size: 0.9em; color: var(--text-muted);">Najedź na koła, aby zobaczyć strukturę.</p>
+
+        <div class="concept-grid">
+            <div class="card">
+                <h3>Suma (<span class="math-inline">A ∪ B</span>)</h3>
+                <p>Oznacza "lub". Elementy należące do A, do B, lub do obu naraz.</p>
+            </div>
+            <div class="card">
+                <h3>Przecięcie (<span class="math-inline">A ∩ B</span>)</h3>
+                <p>Oznacza "i". Część wspólna. Elementy należące jednocześnie do A i B.</p>
+            </div>
+            <div class="card">
+                <h3>Dopełnienie (<span class="math-inline">A<sup>c</sup></span>)</h3>
+                <p>Wszystko co <strong>nie jest</strong> w A. W prawdopodobieństwie to "zdarzenie przeciwne".</p>
+            </div>
+        </div>
+
+        <div class="math-block" style="font-size: 1em;">
+            <strong>Prawa De Morgana:</strong><br>
+            (A ∪ B)<sup>c</sup> = A<sup>c</sup> ∩ B<sup>c</sup> <br>
+            (A ∩ B)<sup>c</sup> = A<sup>c</sup> ∪ B<sup>c</sup>
+        </div>
+    </section>
+
+    <!-- 2. AKSJOMATY KOŁMOGOROWA -->
+    <section id="axioms">
+        <h2>2. Aksjomaty Kołmogorowa</h2>
+        <p>To fundament współczesnej matematyki. Każda teoria prawdopodobieństwa musi spełniać te trzy zasady:</p>
+
+        <div class="step-list">
+            <div class="step-item">
+                <p><strong>1. Prawdopodobieństwo jest liczbą od 0 do 1.</strong><br>
+                <span class="math-inline">0 ≤ P(A) ≤ 1</span>. Nie ma ujemnych szans ani szans > 100%.</p>
+            </div>
+            <div class="step-item">
+                <p><strong>2. Zdarzenie pewne ma prawdopodobieństwo 1.</strong><br>
+                <span class="math-inline">P(Ω) = 1</span>. Coś z przestrzeni zdarzeń musi się wydarzyć.</p>
+            </div>
+            <div class="step-item">
+                <p><strong>3. Addytywność dla zdarzeń rozłącznych.</strong><br>
+                Jeśli <span class="math-inline">A ∩ B = ∅</span>, to <span class="math-inline">P(A ∪ B) = P(A) + P(B)</span>.</p>
+            </div>
+        </div>
+
+        <h3>🛠️ Praktyczny wniosek: Wzór Włączeń i Wyłączeń</h3>
+        <p>Jeśli zdarzenia <strong>nie są rozłączne</strong> (mają część wspólną), musimy odjąć to, co policzyliśmy podwójnie:</p>
+        <div class="math-block">
+            P(A ∪ B) = P(A) + P(B) - P(A ∩ B)
+        </div>
+    </section>
+
+    <!-- 3. ZDARZENIA NIEZALEŻNE -->
+    <section id="independence">
+        <h2>3. Niezależność Zdarzeń</h2>
+        <p>Dwa zdarzenia są niezależne, jeśli zajście jednego <strong>nie wpływa</strong> na szansę zajścia drugiego (np. rzut kostką i rzut monetą).</p>
+
+        <div class="math-block" style="border-left-color: var(--accent-cyan);">
+            Definicja niezależności:<br>
+            P(A ∩ B) = P(A) · P(B)
+        </div>
+
+        <h3>🃏 Przykład złożony (Zależność)</h3>
+        <p>Losujemy 2 karty z 52. Niech <span class="math-inline">A<sup>c</sup></span> = "brak figury", <span class="math-inline">B<sup>c</sup></span> = "brak czerwonej".</p>
+        <p>Okazuje się, że <span class="math-inline">P(A<sup>c</sup> ∩ B<sup>c</sup>) ≈ 0.1432</span>, a iloczyn <span class="math-inline">P(A<sup>c</sup>) · P(B<sup>c</sup>) ≈ 0.1442</span>.</p>
+        <p style="color: var(--accent-pink);"><strong>Wniosek:</strong> Wyniki są minimalnie różne! Zdarzenia są <strong>zależne</strong> (wyciągnięcie karty zmienia talię).</p>
+    </section>
+
+    <!-- 4. PRAWDOPODOBIEŃSTWO WARUNKOWE -->
+    <section id="conditional">
+        <h2>4. Prawdopodobieństwo Warunkowe</h2>
+        <p>Jak zmienia się szansa, gdy wiemy, że coś już zaszło? "Intuicja: Zmieniamy przestrzeń zdarzeń".</p>
+
+        <div class="math-block">
+            P(A | B) = 
+            <div class="fraction">
+                <span class="top">P(A ∩ B)</span>
+                <span class="bottom">P(B)</span>
+            </div>
+        </div>
+        <p style="text-align: center; font-size: 0.9em;">(przy założeniu <span class="math-inline">P(B) > 0</span>)</p>
+
+        <h3>🎓 Przykład: Studenci</h3>
+        <p>Dane statystyczne na roku:</p>
+        <ul>
+            <li><span style="color: var(--accent-cyan)">●</span> <strong>60%</strong> zdało Matematykę (<span class="math-inline">M</span>)</li>
+            <li><span style="color: var(--accent-pink)">●</span> <strong>50%</strong> zdało Fizykę (<span class="math-inline">F</span>)</li>
+            <li><span style="color: var(--accent-purple)">●</span> <strong>30%</strong> zdało OBA przedmioty (<span class="math-inline">M ∩ F</span>)</li>
+        </ul>
+        
+        <p><strong>Pytanie:</strong> Jakie jest prawdopodobieństwo, że student zdał Fizykę, jeśli wiemy, że <strong>już zdał Matematykę</strong>?</p>
+
+        <div class="math-block" style="font-size: 1.1em; background: rgba(0,0,0,0.3);">
+            P(F | M) = 
+            <div class="fraction">
+                <span class="top">P(F ∩ M)</span>
+                <span class="bottom">P(M)</span>
+            </div>
+            =
+            <div class="fraction">
+                <span class="top">0.30</span>
+                <span class="bottom">0.60</span>
+            </div>
+            =
+            <div class="fraction">
+                <span class="top">1</span>
+                <span class="bottom">2</span>
+            </div>
+            = 50%
+        </div>
+
+        <!-- Interactive Visualization -->
+        <div style="background: #0f172a; padding: 20px; border-radius: 10px; border: 1px solid var(--text-muted); margin-top: 20px;">
+            <p style="margin-bottom: 10px;"><strong>Wizualizacja Populacji (100 studentów)</strong></p>
+            <div class="pop-grid" id="student-grid"></div>
+            <div style="display: flex; gap: 15px; font-size: 0.8em; justify-content: center; margin-top: 10px;">
+                <span style="color: var(--accent-cyan)">■ Tylko Matma (30)</span>
+                <span style="color: var(--accent-purple)">■ Oba (30)</span>
+                <span style="color: var(--accent-pink)">■ Tylko Fizyka (20)</span>
+                <span style="color: #334155">■ Reszta (20)</span>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9em;">
+                Warunek "Zdał Matematykę" ogranicza nas tylko do niebieskich i fioletowych kratek (razem 60).<br>
+                Z tych 60, fioletowych (zdali też fizykę) jest 30. <br>
+                <strong>30 z 60 to dokładnie 50%.</strong>
+            </p>
+        </div>
+    </section>
+
+    <!-- PODSUMOWANIE -->
+    <section id="summary">
+        <h2>📝 Podsumowanie i Wzory</h2>
+        <p>Najważniejsza ściąga z tego wykładu.</p>
+        
+        <table class="summary-table">
+            <tr>
+                <th>Pojęcie</th>
+                <th>Wzór / Opis</th>
+            </tr>
+            <tr>
+                <td><strong>Aksjomaty</strong></td>
+                <td>0 ≤ P(A) ≤ 1, P(Ω)=1, Addytywność dla rozłącznych.</td>
+            </tr>
+            <tr>
+                <td><strong>Zdarzenie Przeciwne</strong></td>
+                <td>P(A<sup>c</sup>) = 1 - P(A)</td>
+            </tr>
+            <tr>
+                <td><strong>Suma Zdarzeń</strong></td>
+                <td>P(A ∪ B) = P(A) + P(B) - P(A ∩ B)</td>
+            </tr>
+            <tr>
+                <td><strong>Niezależność</strong></td>
+                <td>P(A ∩ B) = P(A) · P(B)</td>
+            </tr>
+            <tr>
+                <td><strong>Prawdopodobieństwo Warunkowe</strong></td>
+                <td>
+                    P(A | B) = 
+                    <div class="fraction" style="font-size: 0.8em;">
+                        <span class="top">P(A ∩ B)</span>
+                        <span class="bottom">P(B)</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+</div>
+
+<script>
+    // --- SKRYPTY WIZUALIZACJI ---
+
+    // Generowanie siatki studentów
+    const grid = document.getElementById('student-grid');
+    
+    // 30 both (Math + Phys) -> Purple
+    // 30 math only (60 total math - 30 both) -> Cyan
+    // 20 phys only (50 total phys - 30 both) -> Pink
+    // 20 neither -> Grey
+    
+    const students = [
+        ...Array(30).fill('both'),
+        ...Array(30).fill('math'),
+        ...Array(20).fill('physics'),
+        ...Array(20).fill('none')
+    ];
+
+    students.forEach((type, index) => {
+        const div = document.createElement('div');
+        div.className = `pop-item ${type}`;
+        // Animation delay for effect
+        div.style.animation = `fadeIn 0.5s ease forwards ${index * 0.01}s`;
+        div.title = type === 'both' ? 'Zdał oba' : type === 'math' ? 'Zdał tylko matmę' : type === 'physics' ? 'Zdał tylko fizykę' : 'Nie zdał';
+        grid.appendChild(div);
+    });
+
+    // Progress Bar
+    window.onscroll = function() {
+        let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        let scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar").style.width = scrolled + "%";
+    };
+</script>
+
+</body>
+</html>

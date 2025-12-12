@@ -1,0 +1,730 @@
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    header {
+        text-align: center;
+        padding: 60px 20px;
+        position: relative;
+    }
+
+    h1 {
+        font-size: 3.5em;
+        background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradient 3s ease infinite;
+        background-size: 200% 200%;
+    }
+
+    @keyframes gradient {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+        font-size: 1.2em;
+        color: #a8b2d1;
+        margin-top: 10px;
+    }
+
+    nav {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 30px 0;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .nav-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid transparent;
+        display: block;
+    }
+
+    .nav-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        border-color: #fff;
+    }
+
+    section {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        margin: 30px 0;
+        border: 1px solid rgba(255,255,255,0.1);
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 0.8s forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    section:nth-child(2) { animation-delay: 0.2s; }
+    section:nth-child(3) { animation-delay: 0.4s; }
+    section:nth-child(4) { animation-delay: 0.6s; }
+
+    h2 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        color: #667eea;
+        position: relative;
+        display: inline-block;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    h3 {
+        font-size: 1.8em;
+        color: #f093fb;
+        margin: 25px 0 15px 0;
+    }
+
+    .concept-card {
+        background: rgba(102,126,234,0.1);
+        border-left: 5px solid #667eea;
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 10px;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .concept-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .concept-card:hover::before {
+        left: 100%;
+    }
+
+    .concept-card:hover {
+        transform: translateX(10px);
+        box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+    }
+
+    .concept-title {
+        font-size: 1.3em;
+        color: #667eea;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .interactive-viz {
+        background: rgba(0,0,0,0.3);
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: center;
+    }
+
+    canvas {
+        border: 2px solid rgba(102,126,234,0.3);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        cursor: crosshair;
+        max-width: 100%;
+    }
+
+    .formula {
+        background: rgba(118,75,162,0.2);
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin: 15px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 1.1em;
+        border: 1px solid rgba(118,75,162,0.4);
+        text-align: center;
+    }
+
+    .structure-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+
+    .structure-item {
+        background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2));
+        padding: 25px;
+        border-radius: 15px;
+        border: 2px solid rgba(102,126,234,0.3);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .structure-item:hover {
+        transform: scale(1.05) rotate(2deg);
+        border-color: #667eea;
+        box-shadow: 0 15px 40px rgba(102,126,234,0.4);
+    }
+
+    .matrix-demo {
+        display: inline-block;
+        margin: 20px;
+    }
+
+    .matrix-cell {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        background: rgba(102,126,234,0.3);
+        border: 2px solid #667eea;
+        margin: 3px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 5px;
+        transition: all 0.3s;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .matrix-cell:hover {
+        background: #667eea;
+        transform: scale(1.2);
+        box-shadow: 0 5px 15px rgba(102,126,234,0.6);
+    }
+
+    .example-box {
+        background: rgba(240,147,251,0.1);
+        border: 2px dashed #f093fb;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        color: #f093fb;
+        cursor: help;
+        border-bottom: 2px dotted #f093fb;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 300px;
+        background-color: rgba(118,75,162,0.95);
+        color: #fff;
+        text-align: center;
+        border-radius: 10px;
+        padding: 15px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border: 2px solid #f093fb;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .particle {
+        position: fixed;
+        width: 5px;
+        height: 5px;
+        background: #667eea;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: float 3s infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .btn-interactive {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin: 10px;
+        font-weight: 600;
+    }
+
+    .btn-interactive:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 30px rgba(102,126,234,0.5);
+    }
+
+    .highlight {
+        background: linear-gradient(120deg, rgba(102,126,234,0.3) 0%, rgba(102,126,234,0.3) 100%);
+        background-repeat: no-repeat;
+        background-size: 0% 100%;
+        transition: background-size 0.3s;
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+
+    .highlight:hover {
+        background-size: 100% 100%;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2.5em; }
+        h2 { font-size: 2em; }
+        section { padding: 25px; }
+        .nav-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="container">
+    <header>
+        <h1>🎯 Algebra Interaktywna</h1>
+        <p class="subtitle">Odkryj matematykę w nowoczesny sposób</p>
+    </header>
+
+    <nav>
+        <div class="nav-grid">
+            <a href="#structures" class="nav-btn">📐 Struktury Algebraiczne</a>
+            <a href="#complex" class="nav-btn">🌀 Liczby Zespolone</a>
+            <a href="#matrices" class="nav-btn">🔢 Macierze</a>
+        </div>
+    </nav>
+
+    <section id="structures">
+        <h2>I. Struktury Algebraiczne</h2>
+        <p style="font-size: 1.2em; color: #a8b2d1; margin-bottom: 30px;">
+            Badamy "reguły gry" w matematyce - jak liczby i obiekty ze sobą współdziałają.
+        </p>
+
+        <h3>🎮 Kluczowe Pojęcia</h3>
+
+        <div class="concept-card" onclick="this.style.background = 'rgba(102,126,234,0.2)'">
+            <div class="concept-title">⚙️ Działanie wewnętrzne</div>
+            <p>To "reguła gry" w danym zbiorze - zawsze daje wynik z tego samego zbioru. <span class="highlight">Jeśli dodasz dwie liczby całkowite, wynik jest zawsze całkowity!</span></p>
+        </div>
+
+        <div class="concept-card" onclick="this.style.background = 'rgba(102,126,234,0.2)'">
+            <div class="concept-title">🎯 Element neutralny (e)</div>
+            <p>Element, który <span class="tooltip">nic nie zmienia<span class="tooltiptext">W dodawaniu to 0 (x+0=x), w mnożeniu to 1 (x×1=x)</span></span>. Może być tylko jeden taki element!</p>
+            <div class="formula">x ⊕ e = x</div>
+        </div>
+
+        <div class="concept-card" onclick="this.style.background = 'rgba(102,126,234,0.2)'">
+            <div class="concept-title">🔄 Element odwrotny (x')</div>
+            <p>"Przeciwnik" elementu x - razem dają element neutralny.</p>
+            <div class="example-box">
+                <strong>Przykłady:</strong><br>
+                Dodawanie: 2 + (-2) = 0<br>
+                Mnożenie: 2 × ½ = 1
+            </div>
+        </div>
+
+        <div class="concept-card" onclick="this.style.background = 'rgba(102,126,234,0.2)'">
+            <div class="concept-title">🔗 Łączność</div>
+            <p>Kolejność nawiasów nie ma znaczenia!</p>
+            <div class="formula">(a ⊕ b) ⊕ c = a ⊕ (b ⊕ c)</div>
+        </div>
+
+        <div class="concept-card" onclick="this.style.background = 'rgba(102,126,234,0.2)'">
+            <div class="concept-title">↔️ Przemienność</div>
+            <p>Kolejność elementów nie ma znaczenia!</p>
+            <div class="formula">a ⊕ b = b ⊕ a</div>
+        </div>
+
+        <h3>🏗️ Ważne Struktury</h3>
+
+        <div class="structure-grid">
+            <div class="structure-item">
+                <h4>👥 Grupa</h4>
+                <p>✓ Łączność<br>✓ Element neutralny<br>✓ Elementy odwrotne</p>
+            </div>
+            <div class="structure-item">
+                <h4>🤝 Grupa abelowa</h4>
+                <p>To grupa + przemienność!</p>
+            </div>
+            <div class="structure-item">
+                <h4>💎 Ciało</h4>
+                <p>Dwa działania (+, ×) działające w zgodzie:<br>
+                • (K, +) grupa abelowa<br>
+                • (K\{0}, ×) grupa abelowa<br>
+                • Rozdzielność: a(b+c) = ab+ac</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="complex">
+        <h2>II. Liczby Zespolone</h2>
+        <p style="font-size: 1.2em; color: #a8b2d1; margin-bottom: 30px;">
+            Rozszerzenie liczb rzeczywistych - dzięki nim rozwiązujemy x² = -1!
+        </p>
+
+        <div class="interactive-viz">
+            <h3>🎨 Płaszczyzna zespolona - kliknij, aby dodać liczbę!</h3>
+            <canvas id="complexCanvas" width="600" height="400"></canvas>
+            <div style="margin-top: 20px;">
+                <button class="btn-interactive" onclick="clearComplex()">🗑️ Wyczyść</button>
+                <button class="btn-interactive" onclick="animateComplex()">✨ Animuj</button>
+            </div>
+            <p id="complexInfo" style="margin-top: 15px; font-size: 1.1em;"></p>
+        </div>
+
+        <h3>📊 Kluczowe Pojęcia</h3>
+
+        <div class="concept-card">
+            <div class="concept-title">🔢 Definicja</div>
+            <p>Liczba zespolona: z = a + bi</p>
+            <div class="formula">
+                a = Re(z) - część rzeczywista<br>
+                b = Im(z) - część urojona<br>
+                i² = -1 - jednostka urojona
+            </div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">🪞 Sprzężenie (z̄)</div>
+            <p>Odbicie względem osi rzeczywistej</p>
+            <div class="formula">z = a + bi → z̄ = a - bi</div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">📏 Moduł |z|</div>
+            <p>"Długość" liczby zespolonej - odległość od zera</p>
+            <div class="formula">|z| = √(a² + b²)</div>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">📐 Argument φ</div>
+            <p>Kąt z dodatnią osią rzeczywistą</p>
+            <div class="formula">φ = arg(z)</div>
+        </div>
+
+        <h3>🧮 Wzory i Działania</h3>
+
+        <div class="example-box">
+            <strong>➕ Dodawanie/Odejmowanie:</strong>
+            <div class="formula">(a+bi) ± (c+di) = (a±c) + (b±d)i</div>
+        </div>
+
+        <div class="example-box">
+            <strong>🔄 Postać trygonometryczna:</strong>
+            <div class="formula">z = |z|(cos φ + i sin φ)</div>
+            <p style="margin-top: 10px;">Ułatwia mnożenie, dzielenie i potęgowanie!</p>
+        </div>
+
+        <div class="example-box">
+            <strong>⚡ Wzór de Moivre'a:</strong>
+            <div class="formula">z<sup>n</sup> = |z|<sup>n</sup>(cos nφ + i sin nφ)</div>
+        </div>
+    </section>
+
+    <section id="matrices">
+        <h2>III. Macierze</h2>
+        <p style="font-size: 1.2em; color: #a8b2d1; margin-bottom: 30px;">
+            Prostokątne tablice liczb - superbohaterowie algebry liniowej!
+        </p>
+
+        <div class="interactive-viz">
+            <h3>🎲 Interaktywna Macierz 3×3 - kliknij na komórki!</h3>
+            <div id="matrixDemo"></div>
+            <div style="margin-top: 20px;">
+                <button class="btn-interactive" onclick="randomMatrix()">🎲 Losowa</button>
+                <button class="btn-interactive" onclick="identityMatrix()">🎯 Jednostkowa</button>
+                <button class="btn-interactive" onclick="zeroMatrix()">⭕ Zerowa</button>
+            </div>
+        </div>
+
+        <h3>📐 Podstawy</h3>
+
+        <div class="concept-card">
+            <div class="concept-title">📊 Definicja</div>
+            <p>Macierz m×n ma <strong>m wierszy</strong> i <strong>n kolumn</strong></p>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">⬜ Macierz kwadratowa</div>
+            <p>Liczba wierszy = liczba kolumn (n×n)</p>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">🔷 Macierz diagonalna</div>
+            <p>Elementy tylko na głównej przekątnej, reszta = 0</p>
+        </div>
+
+        <div class="concept-card">
+            <div class="concept-title">🎯 Macierz jednostkowa (I<sub>n</sub>)</div>
+            <p>Na przekątnej same 1, poza nią same 0</p>
+            <div class="formula">A · I<sub>n</sub> = A (działa jak "1" w mnożeniu!)</div>
+        </div>
+
+        <h3>⚙️ Działania</h3>
+
+        <div class="structure-grid">
+            <div class="structure-item">
+                <h4>× Mnożenie przez skalar</h4>
+                <p>Każdy element × λ</p>
+            </div>
+            <div class="structure-item">
+                <h4>➕ Dodawanie</h4>
+                <p>Element po elemencie<br>(te same wymiary!)</p>
+            </div>
+            <div class="structure-item">
+                <h4>🔄 Transpozycja A<sup>T</sup></h4>
+                <p>Wiersze ↔ Kolumny</p>
+            </div>
+        </div>
+
+        <div class="example-box">
+            <strong>⚡ Wyznacznik det(A):</strong>
+            <p>Jedna liczba, która mówi wszystko o macierzy!</p>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>det(A) = det(A<sup>T</sup>)</li>
+                <li>Wiersz zer → det = 0</li>
+                <li>Zamiana wierszy → zmiana znaku</li>
+                <li>det(A×B) = det(A) × det(B)</li>
+            </ul>
+        </div>
+
+        <h3>🌍 Zastosowania w życiu</h3>
+
+        <div class="structure-grid">
+            <div class="structure-item">
+                <h4>🔍 Google PageRank</h4>
+                <p>Wartości własne macierzy decydują, które strony są najważniejsze!</p>
+            </div>
+            <div class="structure-item">
+                <h4>🌤️ Meteorologia</h4>
+                <p>Prognozowanie pogody, siły wiatru, wilgotności</p>
+            </div>
+            <div class="structure-item">
+                <h4>💰 Ekonomia</h4>
+                <p>Modelowanie wzrostu kapitału i inflacji</p>
+            </div>
+            <div class="structure-item">
+                <h4>🎮 Grafika</h4>
+                <p>Każdy piksel na ekranie to element macierzy!</p>
+            </div>
+            <div class="structure-item">
+                <h4>⚛️ Fizyka</h4>
+                <p>Opis ruchu oddziałujących ciał</p>
+            </div>
+            <div class="structure-item">
+                <h4>🧮 Układy równań</h4>
+                <p>Szybkie rozwiązywanie złożonych problemów</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Płaszczyzna zespolona
+    const canvas = document.getElementById('complexCanvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+
+    function drawComplexPlane() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Osie
+        ctx.strokeStyle = '#667eea';
+        ctx.lineWidth = 2;
+        
+        // Oś rzeczywista
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height/2);
+        ctx.lineTo(canvas.width, canvas.height/2);
+        ctx.stroke();
+        
+        // Oś urojona
+        ctx.beginPath();
+        ctx.moveTo(canvas.width/2, 0);
+        ctx.lineTo(canvas.width/2, canvas.height);
+        ctx.stroke();
+        
+        // Opisy
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px Arial';
+        ctx.fillText('Re', canvas.width - 30, canvas.height/2 - 10);
+        ctx.fillText('Im', canvas.width/2 + 10, 20);
+        
+        // Punkty
+        points.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${i * 60}, 70%, 60%)`;
+            ctx.fill();
+            
+            // Wektor
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, canvas.height/2);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = `hsl(${i * 60}, 70%, 60%)`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Wartość
+            const re = ((p.x - canvas.width/2) / 50).toFixed(1);
+            const im = ((canvas.height/2 - p.y) / 50).toFixed(1);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(`${re} + ${im}i`, p.x + 10, p.y - 10);
+        });
+    }
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        points.push({x, y});
+        drawComplexPlane();
+        
+        const re = ((x - canvas.width/2) / 50).toFixed(1);
+        const im = ((canvas.height/2 - y) / 50).toFixed(1);
+        const mod = Math.sqrt(Math.pow(re, 2) + Math.pow(im, 2)).toFixed(2);
+        document.getElementById('complexInfo').textContent = 
+            `Dodano: z = ${re} + ${im}i, |z| = ${mod}`;
+    });
+
+    function clearComplex() {
+        points = [];
+        drawComplexPlane();
+        document.getElementById('complexInfo').textContent = '';
+    }
+
+    function animateComplex() {
+        let angle = 0;
+        const animate = setInterval(() => {
+            angle += 0.05;
+            points = points.map(p => {
+                const dx = p.x - canvas.width/2;
+                const dy = p.y - canvas.height/2;
+                const newX = canvas.width/2 + dx * Math.cos(0.05) - dy * Math.sin(0.05);
+                const newY = canvas.height/2 + dx * Math.sin(0.05) + dy * Math.cos(0.05);
+                return {x: newX, y: newY};
+            });
+            drawComplexPlane();
+            if (angle > Math.PI * 2) clearInterval(animate);
+        }, 50);
+    }
+
+    // Inicjalizacja płaszczyzny
+    drawComplexPlane();
+
+    // Macierz interaktywna
+    let matrix = [[1,0,0],[0,1,0],[0,0,1]];
+
+    function renderMatrix() {
+        const container = document.getElementById('matrixDemo');
+        container.innerHTML = '';
+        
+        matrix.forEach((row, i) => {
+            const rowDiv = document.createElement('div');
+            row.forEach((val, j) => {
+                const cell = document.createElement('div');
+                cell.className = 'matrix-cell';
+                cell.textContent = val;
+                cell.onclick = () => {
+                    matrix[i][j] = (matrix[i][j] + 1) % 10;
+                    renderMatrix();
+                };
+                rowDiv.appendChild(cell);
+            });
+            container.appendChild(rowDiv);
+        });
+    }
+
+    function randomMatrix() {
+        matrix = matrix.map(row => row.map(() => Math.floor(Math.random() * 10)));
+        renderMatrix();
+    }
+
+    function identityMatrix() {
+        matrix = [[1,0,0],[0,1,0],[0,0,1]];
+        renderMatrix();
+    }
+
+    function zeroMatrix() {
+        matrix = [[0,0,0],[0,0,0],[0,0,0]];
+        renderMatrix();
+    }
+
+    renderMatrix();
+
+    // Particles effect
+    for(let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 3 + 's';
+        document.body.appendChild(particle);
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if(target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>

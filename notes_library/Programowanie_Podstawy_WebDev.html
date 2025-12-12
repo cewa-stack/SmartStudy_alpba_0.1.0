@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teoria WebDev & Słownik</title>
+    <style>
+        /* --- KOLORYSTYKA APKI PYTHONOWEJ --- */
+        :root {
+            --bg-main: #0f0f14;
+            --bg-card: #1a1a24;
+            --bg-elevated: #232333;
+            --accent: #00f7ff;
+            --accent-dim: rgba(0, 247, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-highlight: #e2e8f0;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 300px; /* Miejsce na wysoki panel dolny */
+            line-height: 1.6;
+        }
+
+        /* --- NAWIGACJA ZAKŁADEK --- */
+        .tabs-nav {
+            display: flex;
+            background: rgba(15, 15, 20, 0.95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
+        
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: linear-gradient(to top, var(--accent-dim), transparent);
+        }
+
+        /* --- TREŚĆ --- */
+        .tab-content { display: none; padding: 30px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.5s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ZAKŁADKA 1: TEORIA --- */
+        h2 { color: var(--accent); border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.5rem; }
+        h3 { color: var(--text-highlight); margin-top: 20px; font-size: 1.2rem; }
+        p { color: var(--text-muted); margin-bottom: 15px; text-align: justify; }
+        
+        .concept-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .code-snippet {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            color: #d4d4d4;
+            border: 1px solid var(--border);
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        
+        .highlight { color: var(--accent); font-weight: bold; }
+        .tag-hl { color: #569cd6; } /* HTML Blue */
+        .attr-hl { color: #9cdcfe; } /* Attr Blue */
+        .val-hl { color: #ce9178; } /* String Orange */
+
+        /* Wizualizacja drzewa DOM */
+        .dom-tree { padding: 10px; border-left: 2px solid #333; margin-left: 20px; }
+        .dom-node { 
+            border: 1px solid #444; padding: 8px; margin: 5px 0; background: var(--bg-elevated); 
+            display: inline-block; min-width: 100px; border-radius: 4px; font-size: 0.85rem;
+        }
+        .dom-child { margin-left: 30px; position: relative; }
+        .dom-child::before {
+            content: "└─"; position: absolute; left: -25px; top: 12px; color: #555;
+        }
+
+        /* --- ZAKŁADKA 2: SŁOWNIK --- */
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .dictionary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .dict-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: 'Consolas', monospace;
+            font-weight: 600;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .dict-item:hover { border-color: var(--accent); color: var(--text-highlight); transform: translateY(-2px); }
+        .dict-item.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .dict-item.css-item { border-color: rgba(199, 137, 255, 0.3); color: #d8b4fe; } /* Fioletowy dla CSS */
+
+        /* PANEL DOLNY (WIĘCEJ TEKSTU) */
+        .info-panel {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 320px; /* Wysoki panel */
+            background-color: var(--bg-elevated);
+            border-top: 3px solid var(--accent);
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.7);
+            display: flex;
+            transform: translateY(110%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 999;
+        }
+        .info-panel.visible { transform: translateY(0); }
+
+        /* Podział panelu */
+        .panel-text {
+            width: 70%; /* DUŻO MIEJSCA NA TEKST */
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        .panel-visual {
+            width: 30%; /* MNIEJ MIEJSCA NA WIZUALIZACJĘ */
+            background: #000;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .panel-visual::before { content: "PODGLĄD"; position: absolute; top: 10px; right: 10px; font-size: 0.7rem; color: #555; font-weight: bold; }
+
+        /* Stylowanie treści w panelu */
+        .panel-title { font-size: 1.8rem; color: var(--accent); margin-bottom: 5px; font-family: 'Consolas', monospace; }
+        .panel-subtitle { font-size: 0.9rem; color: #777; margin-bottom: 20px; font-style: italic; }
+        .panel-desc { font-size: 1rem; color: var(--text-highlight); margin-bottom: 20px; line-height: 1.7; }
+        
+        .panel-diff-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #f59e0b; /* Amber warning color */
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .panel-diff-title { color: #f59e0b; font-weight: bold; margin-bottom: 5px; display: block; }
+
+        /* Symulacje w panelu wizualnym */
+        .demo-box { background: white; color: black; padding: 10px; border-radius: 4px; text-align: center; }
+        .demo-table td, .demo-table th { border: 1px solid black; padding: 5px; }
+        .demo-table th { font-weight: bold; background: #ddd; }
+    </style>
+</head>
+<body>
+
+    <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="openTab('theory')">📘 Teoria i Relacje</button>
+        <button class="tab-btn" onclick="openTab('dictionary')">📚 Pełny Słownik (HTML+CSS)</button>
+    </nav>
+
+    <!-- === ZAKŁADKA 1: TEORIA === -->
+    <div id="theory" class="tab-content active">
+        
+        <h1>Jak działa Twój kod? (Teoria)</h1>
+        <p>Tutaj dowiesz się, dlaczego kod pisze się w takiej kolejności i jak elementy na siebie wpływają.</p>
+
+        <!-- 1. RELACJA HTML - CSS -->
+        <div class="concept-box">
+            <h2>1. Fundament i Wygląd (HTML vs CSS)</h2>
+            <p>Wyobraź sobie budowę domu. <strong>HTML</strong> to cegły, ściany i dach (struktura). <strong>CSS</strong> to farba, tapety i układ mebli (wygląd).</p>
+            <p>W Twoim pliku <code>index.html</code> w sekcji <code>&lt;head&gt;</code> znajduje się linijka:</p>
+            <div class="code-snippet">&lt;link rel="stylesheet" href="style.css"&gt;</div>
+            <p>To jest "kabel", który łączy oba pliki. Bez niego przeglądarka załadowałaby tylko czysty tekst, ignorując wszystkie kolory i układy z pliku <code>style.css</code>.</p>
+        </div>
+
+        <!-- 2. DRZEWO DOM -->
+        <div class="concept-box">
+            <h2>2. Relacja Rodzic - Dziecko (Zagnieżdżanie)</h2>
+            <p>HTML ma strukturę drzewa. Jeśli umieścisz tag wewnątrz innego tagu, tworzysz relację. To kluczowe dla CSS.</p>
+            
+            <p>Spójrz na fragment Twojego kodu:</p>
+            <div class="dom-tree">
+                <div class="dom-node">BODY (Rodzic Główny)</div>
+                <div class="dom-child">
+                    <div class="dom-node">DIV .main-container (Rodzic layoutu)</div>
+                    <div class="dom-child">
+                        <div class="dom-node">NAV .site-menu (Dziecko 1)</div>
+                    </div>
+                    <div class="dom-child">
+                        <div class="dom-node">DIV .main-content (Dziecko 2)</div>
+                        <div class="dom-child">
+                            <div class="dom-node">ARTICLE (Wnuk)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Dlaczego to ważne?</h3>
+            <p>W pliku CSS użyłeś zapisu: <code>article header p</code>. Oznacza to: "Pokoloruj paragraf (p), ALE TYLKO taki, który siedzi w nagłówku (header), który siedzi w artykule (article)". Paragrafy poza artykułem nie zostaną zmienione. To tzw. <strong>precyzyjne celowanie</strong>.</p>
+        </div>
+
+        <!-- 3. CSS GRID -->
+        <div class="concept-box">
+            <h2>3. Layout strony (Grid)</h2>
+            <p>W klasie <code>.main-container</code> użyłeś <code>display: grid</code>. To zmienia sposób, w jaki "Dzieci" tego diva się ustawiają.</p>
+            <div class="code-snippet">grid-template-columns: 20% 60% 20%;</div>
+            <p>Przeglądarka bierze trzy bezpośrednie elementy wewnątrz tego kontenera (Nav, Div środkowy, Figure sidebar) i przydziela im miejsce:</p>
+            <ul>
+                <li>Pierwsze dziecko dostaje 20% szerokości.</li>
+                <li>Drugie dziecko dostaje 60% szerokości.</li>
+                <li>Trzecie dziecko dostaje 20% szerokości.</li>
+            </ul>
+            <p>Bez tego zapisu, elementy wyświetliłyby się <strong>jeden pod drugim</strong> (jak klocki), bo tak domyślnie działają bloki w HTML.</p>
+        </div>
+
+    </div>
+
+    <!-- === ZAKŁADKA 2: SŁOWNIK === -->
+    <div id="dictionary" class="tab-content">
+        <h1 style="text-align: center;">Pełny Słownik HTML & CSS</h1>
+        <p style="text-align: center; margin-bottom: 30px;">Kliknij element, aby przeczytać szczegółowe wyjaśnienie.</p>
+
+        <div class="dictionary-grid">
+            <!-- HTML STRUKTURA -->
+            <div class="dict-item" onclick="loadDef('doctype')">&lt;!DOCTYPE&gt;</div>
+            <div class="dict-item" onclick="loadDef('html')">&lt;html&gt;</div>
+            <div class="dict-item" onclick="loadDef('head')">&lt;head&gt;</div>
+            <div class="dict-item" onclick="loadDef('meta')">&lt;meta&gt;</div>
+            <div class="dict-item" onclick="loadDef('link')">&lt;link&gt;</div>
+            <div class="dict-item" onclick="loadDef('body')">&lt;body&gt;</div>
+
+            <!-- HTML KONTENERY -->
+            <div class="dict-item" onclick="loadDef('div')">&lt;div&gt;</div>
+            <div class="dict-item" onclick="loadDef('nav')">&lt;nav&gt;</div>
+            <div class="dict-item" onclick="loadDef('article')">&lt;article&gt;</div>
+            <div class="dict-item" onclick="loadDef('header')">&lt;header&gt;</div>
+            
+            <!-- HTML TABELA (ROZBUDOWANE) -->
+            <div class="dict-item" onclick="loadDef('table')">&lt;table&gt;</div>
+            <div class="dict-item" onclick="loadDef('thead')">&lt;thead&gt;</div>
+            <div class="dict-item" onclick="loadDef('tr')">&lt;tr&gt;</div>
+            <div class="dict-item" onclick="loadDef('th')">&lt;th&gt;</div>
+            <div class="dict-item" onclick="loadDef('td')">&lt;td&gt;</div>
+
+            <!-- HTML OBRAZKI -->
+            <div class="dict-item" onclick="loadDef('figure')">&lt;figure&gt;</div>
+            <div class="dict-item" onclick="loadDef('figcaption')">&lt;figcaption&gt;</div>
+            <div class="dict-item" onclick="loadDef('img')">&lt;img&gt;</div>
+
+            <!-- HTML TEKST -->
+            <div class="dict-item" onclick="loadDef('h1')">&lt;h1&gt;</div>
+            <div class="dict-item" onclick="loadDef('p')">&lt;p&gt;</div>
+            <div class="dict-item" onclick="loadDef('span')">&lt;span&gt;</div>
+            <div class="dict-item" onclick="loadDef('br')">&lt;br&gt;</div>
+
+            <!-- CSS -->
+            <div class="dict-item css-item" onclick="loadDef('class')">.klasa (class)</div>
+            <div class="dict-item css-item" onclick="loadDef('display')">display</div>
+            <div class="dict-item css-item" onclick="loadDef('grid')">grid-template</div>
+            <div class="dict-item css-item" onclick="loadDef('margin')">margin vs padding</div>
+        </div>
+    </div>
+
+    <!-- PANEL DOLNY (WIĘCEJ TEKSTU) -->
+    <div id="infoPanel" class="info-panel">
+        <div class="panel-text">
+            <div id="defTitle" class="panel-title">Wybierz element</div>
+            <div id="defSub" class="panel-subtitle">...</div>
+            <div id="defDesc" class="panel-desc">
+                Kliknij dowolny przycisk powyżej, aby zobaczyć szczegółowe wyjaśnienie, różnice między tagami i przykłady użycia w Twoim kodzie.
+            </div>
+            <div id="defDiff" class="panel-diff-box" style="display:none;">
+                <span class="panel-diff-title">⚠️ Ważna różnica:</span>
+                <span id="defDiffText"></span>
+            </div>
+        </div>
+        <div class="panel-visual" id="defVisual">
+            <!-- Tu pojawi się demo -->
+            <div style="color: #555;">Wizualizacja</div>
+        </div>
+    </div>
+
+    <script>
+        // --- BAZA WIEDZY ---
+        const definitions = {
+            'doctype': {
+                title: '<!DOCTYPE html>',
+                sub: 'Deklaracja Typu Dokumentu',
+                desc: 'To nie jest znacznik HTML, ale instrukcja dla przeglądarki. Informuje ją, w jakiej wersji HTML napisana jest strona. <code>html</code> oznacza najnowszy standard HTML5. Bez tego przeglądarka mogłaby przejść w "Tryb Dziadka" (Quirks Mode) i źle wyświetlać stronę.',
+                diff: null,
+                visual: '<div style="color:#aaa">&lt;!DOCTYPE html&gt;</div>'
+            },
+            'html': {
+                title: '<html>',
+                sub: 'Korzeń Dokumentu',
+                desc: 'Najważniejszy element. Obejmuje całą zawartość strony. Posiada atrybut <code>lang="pl"</code> (w Twoim dodatkowym pliku), co pomaga wyszukiwarkom zrozumieć, że strona jest po polsku.',
+                diff: null,
+                visual: '⬜ Cała strona'
+            },
+            'head': {
+                title: '<head>',
+                sub: 'Sekcja Nagłówkowa (Mózg)',
+                desc: 'Kontener na metadane. Wszystko, co tu wpiszesz, NIE jest wyświetlane bezpośrednio w oknie przeglądarki (z wyjątkiem tytułu na karcie). Tutaj podpinasz CSS i kodowanie znaków.',
+                diff: 'Różnica vs <header>: <head> to ustawienia techniczne pliku. <header> to widoczny nagłówek z logo i menu na stronie.',
+                visual: '⚙️ Ustawienia'
+            },
+            'meta': {
+                title: '<meta>',
+                sub: 'Metadane',
+                desc: 'Użyłeś <code>&lt;meta charset="utf-8"&gt;</code>. To kluczowe ustawienie kodowania. Dzięki niemu przeglądarka wie, jak wyświetlić polskie znaki (ą, ę, ś, ć). Bez tego zobaczyłbyś dziwne "krzaczki".',
+                diff: null,
+                visual: '🔠 utf-8'
+            },
+            'table': {
+                title: '<table>',
+                sub: 'Kontener tabeli',
+                desc: 'Otwiera i zamyka tabelę. W HTML5 rzadko używa się tabel do układania strony (layoutu) - od tego jest CSS Grid. Tabel używa się tylko do prezentacji danych (tak jak u Ciebie lista telefonów).',
+                diff: null,
+                visual: '📊 Tabela'
+            },
+            'thead': {
+                title: '<thead>',
+                sub: 'Głowa tabeli',
+                desc: 'Grupuje wiersze, które są nagłówkami tabeli. Dzięki temu, gdy drukujesz długą tabelę, nagłówek może powtórzyć się na każdej stronie. W Twoim kodzie zawiera wiersz z "Dział" i "Numer telefonu".',
+                diff: 'Jest opcjonalny, ale warto go używać dla porządku w kodzie (semantyka).',
+                visual: '<table class="demo-table" style="background:white; color:black; width:100%"><thead><tr><th>Nagłówek</th></tr></thead><tbody><tr><td>Dane</td></tr></tbody></table>'
+            },
+            'tr': {
+                title: '<tr>',
+                sub: 'Table Row (Wiersz)',
+                desc: 'Definiuje pojedynczy poziomy wiersz w tabeli. Musi znajdować się wewnątrz <code>table</code>, <code>thead</code> lub <code>tbody</code>.',
+                diff: null,
+                visual: '<div style="border:1px solid white; height:20px; width:100%; margin:2px;">Wiersz</div>'
+            },
+            'th': {
+                title: '<th>',
+                sub: 'Table Header (Komórka Nagłówkowa)',
+                desc: 'Używana w pierwszym wierszu tabeli (wewnątrz <code>thead</code>). Domyślnie tekst w niej jest <strong>pogrubiony</strong> i <strong>wyśrodkowany</strong>.',
+                diff: 'Różnica vs <td>: <th> to TYTUŁ kolumny (np. "Cena"). <td> to DANE (np. "50 zł"). Przeglądarka czyta je inaczej.',
+                visual: '<table class="demo-table" style="background:white; color:black;"><tr><th>TH (Bold)</th></tr><tr><td>TD (Normal)</td></tr></table>'
+            },
+            'td': {
+                title: '<td>',
+                sub: 'Table Data (Komórka Danych)',
+                desc: 'Zwykła komórka tabeli zawierająca dane. Tekst jest domyślnie wyrównany do lewej i normalnej grubości.',
+                diff: null,
+                visual: 'Standardowa komórka'
+            },
+            'figure': {
+                title: '<figure>',
+                sub: 'Kontener na media',
+                desc: 'Służy do grupowania obrazka (img) wraz z jego podpisem (figcaption). Dzięki temu przeglądarka wie, że ten podpis dotyczy konkretnie tego obrazka.',
+                diff: 'Dlaczego nie zwykły <div>? Figure ma znaczenie semantyczne - mówi "to jest ilustracja do artykułu".',
+                visual: '<div style="border:1px solid white; padding:5px;"><small>Figure</small><br>[IMG]</div>'
+            },
+            'figcaption': {
+                title: '<figcaption>',
+                sub: 'Podpis obrazka',
+                desc: 'Element, który musi znajdować się wewnątrz <code>figure</code>. Zawiera tekst opisujący obrazek ("Patrz jak programuje").',
+                diff: 'Różnica vs <p>: Figcaption jest "przylepiony" logicznie do obrazka. Jeśli przeniesiesz obrazek w inne miejsce kodu, podpis idzie z nim.',
+                visual: '<div style="color:yellow; font-style:italic;">Podpis figcaption</div>'
+            },
+            'div': {
+                title: '<div>',
+                sub: 'Division (Podział)',
+                desc: 'Najbardziej uniwersalny kontener. Nie ma żadnego znaczenia semantycznego (nie mówi czym jest). Służy tylko do grupowania elementów, aby nadać im klasę i stylować w CSS (np. układać w Gridzie).',
+                diff: null,
+                visual: '📦 Pudełko'
+            },
+            'nav': {
+                title: '<nav>',
+                sub: 'Nawigacja',
+                desc: 'Działa dokładnie jak <code>div</code>, ale informuje roboty Google: "Hej, tutaj są linki do poruszania się po stronie". Użyłeś go do menu bocznego.',
+                diff: null,
+                visual: '🧭 Menu'
+            },
+            'header': {
+                title: '<header>',
+                sub: 'Nagłówek sekcji',
+                desc: 'Użyłeś go wewnątrz <code>article</code>. Oznacza wstęp do artykułu - zazwyczaj zawiera tytuł (h1) i autora.',
+                diff: 'Nie mylić z <head>! <header> to widoczny element strony.',
+                visual: 'Tytuł i Autor'
+            },
+            'article': {
+                title: '<article>',
+                sub: 'Niezależna treść',
+                desc: 'Pojemnik na treść, która ma sens sama w sobie (np. post na blogu, artykuł z gazety). Gdybyś wyciągnął ten kawałek kodu i wkleił gdzie indziej, nadal miałby sens.',
+                diff: null,
+                visual: '📄 Artykuł'
+            },
+            'span': {
+                title: '<span>',
+                sub: 'Kontener liniowy',
+                desc: 'Służy do zaznaczania fragmentów tekstu wewnątrz linii (np. jednego słowa), aby zmienić jego kolor.',
+                diff: 'WAŻNE: W Twoim CSS zmieniłeś jego naturę przez <code>display: block</code>. Normalnie <span> stoi w jednej linii z tekstem. Przez Twoją zmianę, zachowuje się jak <div> (zrzuca tekst niżej).',
+                visual: '<span style="border:1px solid red; display:block">Span Block</span>'
+            },
+            'br': {
+                title: '<br>',
+                sub: 'Break Line',
+                desc: 'Wymusza przejście do nowej linii BEZ tworzenia nowego akapitu (bez odstępu).',
+                diff: 'Różnica vs <p>: <p> robi odstęp (margines). <br> po prostu łamie linię (jak Shift+Enter w Wordzie).',
+                visual: 'Linia 1<br>Linia 2'
+            },
+            'class': {
+                title: 'Atrybut class="..."',
+                sub: 'Klasa CSS',
+                desc: 'Nadaje nazwę elementowi, aby można go było znaleźć w CSS. Np. <code>&lt;p class="news"&gt;</code>.',
+                diff: 'W CSS odwołujemy się do klasy kropką: <code>.news { ... }</code>. Klasy można używać wielokrotnie na stronie.',
+                visual: '.news'
+            },
+            'display': {
+                title: 'CSS: display',
+                sub: 'Sposób wyświetlania',
+                desc: 'Decyduje, jak element zachowuje się względem innych. <code>block</code> zajmuje całą szerokość (nowa linia). <code>inline</code> zajmuje tylko tyle ile tekst. <code>grid</code> zamienia element w siatkę.',
+                diff: null,
+                visual: 'Układ'
+            },
+            'margin': {
+                title: 'CSS: margin vs padding',
+                sub: 'Odstępy',
+                desc: '<strong>Margin</strong> to odstęp na zewnątrz elementu (odpycha sąsiadów). <strong>Padding</strong> to odstęp wewnątrz elementu (odsuwa tekst od ramki).',
+                diff: 'Padding powiększa tło elementu. Margin jest przezroczysty.',
+                visual: '<div style="background:red; padding:5px; margin:5px;">Box</div>'
+            },
+            'grid': {
+                title: 'CSS: grid-template-columns',
+                sub: 'Kolumny siatki',
+                desc: 'Definiuje szerokość kolumn. <code>20% 60% 20%</code> oznacza: pierwsza kolumna zajmuje 20%, druga 60%, trzecia 20%.',
+                diff: null,
+                visual: '|| 20 || 60 || 20 ||'
+            }
+        };
+
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Ukryj panel info przy zmianie zakładki
+            if(tabName === 'theory') document.getElementById('infoPanel').classList.remove('visible');
+        }
+
+        function loadDef(key) {
+            const data = definitions[key];
+            if (!data) return;
+
+            // Wypełnianie danych
+            document.getElementById('defTitle').innerHTML = data.title;
+            document.getElementById('defSub').innerHTML = data.sub;
+            document.getElementById('defDesc').innerHTML = data.desc;
+            document.getElementById('defVisual').innerHTML = data.visual;
+
+            // Obsługa pola różnic
+            const diffBox = document.getElementById('defDiff');
+            if (data.diff) {
+                diffBox.style.display = 'block';
+                document.getElementById('defDiffText').innerHTML = data.diff;
+            } else {
+                diffBox.style.display = 'none';
+            }
+
+            // Aktywacja kafelka
+            document.querySelectorAll('.dict-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Pokazanie panelu
+            document.getElementById('infoPanel').classList.add('visible');
+        }
+    </script>
+</body>
+</html>
