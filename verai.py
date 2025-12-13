@@ -1,6 +1,6 @@
 import google.generativeai as genai
 
-API_KEY = "AIzaSyBUKIfo6XpIarFSUGNenetdcxkm6nlowAU"
+API_KEY = "your_api_key"
 genai.configure(api_key=API_KEY)
 
 print("Dostępne modele:")
